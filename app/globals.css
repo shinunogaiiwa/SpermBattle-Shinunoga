@@ -1,3 +1,98 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-size: 16px;
+  --background: #0a0a0a;
+  --foreground: #f5f5f5;
+  --card: #1a1a1a;
+  --card-foreground: #f5f5f5;
+  --popover: #1a1a1a;
+  --popover-foreground: #f5f5f5;
+  --primary: #B026FF;
+  --primary-foreground: #ffffff;
+  --secondary: #00D9FF;
+  --secondary-foreground: #0a0a0a;
+  --muted: #2a2a2a;
+  --muted-foreground: #888888;
+  --accent: #39FF14;
+  --accent-foreground: #0a0a0a;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: transparent;
+  --input-background: #2a2a2a;
+  --switch-background: #3a3a3a;
+  --font-weight-medium: 600;
+  --font-weight-normal: 400;
+  --ring: #B026FF;
+  --chart-1: #B026FF;
+  --chart-2: #00D9FF;
+  --chart-3: #39FF14;
+  --chart-4: #FF5744;
+  --chart-5: #FF9585;
+  --radius: 0.75rem;
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Custom animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Toxic green text for roasts */
+.text-toxic {
+  color: #39FF14;
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+/* Neon glow effect */
+.neon-glow {
+  box-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+}
+
+/* Gaming pulse animation */
+@keyframes gaming-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(176, 38, 255, 0.5), 0 0 10px rgba(0, 217, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(176, 38, 255, 0.8), 0 0 30px rgba(0, 217, 255, 0.6);
+  }
+}
+
+.gaming-pulse {
+  animation: gaming-pulse 2s infinite;
+}
