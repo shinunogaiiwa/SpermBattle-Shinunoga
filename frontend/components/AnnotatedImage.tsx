@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface AnnotatedImageProps {
   imageUrl: string;
@@ -15,18 +16,20 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   clusterCount,
   pinheadCount,
 }) => {
+  const [currentSrc, setCurrentSrc] = useState<string>(
+    imageUrl || '/placeholder-sperm.svg'
+  );
+
   return (
     <div className="space-y-4">
       <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video border border-gray-700">
-        <img
-          src={imageUrl}
+        <Image
+          src={currentSrc}
           alt="Sperm analysis"
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            // Fallback to a placeholder
-            (e.target as HTMLImageElement).src =
-              'https://images.unsplash.com/photo-1576086213369-97a306d36557?w=800&q=80';
-          }}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 640px"
+          onError={() => setCurrentSrc('/placeholder-sperm.svg')}
         />
         
         {/* Simulated bounding boxes */}

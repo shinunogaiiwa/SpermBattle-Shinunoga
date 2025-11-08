@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trophy, Share2, Swords, TrendingUp, Zap, Gamepad2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
@@ -9,21 +9,74 @@ import { AnnotatedImage } from '@/components/AnnotatedImage';
 import { Button } from '@/components/ui/button';
 import { FloatingSperm } from '@/components/FloatingSperm';
 import { useAppStore } from '@/lib/store';
-import { getAnalysisById } from '@/lib/mockData';
+import { api } from '@/lib/api';
+import type { Analysis } from '@/types';
 
-export default function ReportPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
+export default function ReportPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const currentAnalysis = useAppStore(state => state.currentAnalysis);
-  
-  // Get analysis from store or fetch by ID
-  const analysis = currentAnalysis || getAnalysisById(parseInt(resolvedParams.id));
+  const analysisFromStore = useAppStore(state => state.currentAnalysis);
+  const setCurrentAnalysis = useAppStore(state => state.setCurrentAnalysis);
+  const analysisId = parseInt(params.id, 10);
+  const initialAnalysis =
+    analysisFromStore && analysisFromStore.id === analysisId
+      ? analysisFromStore
+      : null;
+  const [analysis, setAnalysis] = useState<Analysis | null>(initialAnalysis);
+  const [isLoading, setIsLoading] = useState(!initialAnalysis);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!analysis) {
+  useEffect(() => {
+    let cancelled = false;
+
+    if (analysisFromStore && analysisFromStore.id === analysisId) {
+      setAnalysis(analysisFromStore);
+      setIsLoading(false);
+      setError(null);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    api
+      .getAnalysis(analysisId)
+      .then(data => {
+        if (cancelled) return;
+        setAnalysis(data);
+        setCurrentAnalysis(data);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setError('Analysis not found. Upload a sample to continue.');
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [analysisFromStore, analysisId, setCurrentAnalysis]);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
-          <h1 className="text-2xl mb-4">Analysis not found</h1>
+          <h1 className="text-2xl mb-4">Loading analysis...</h1>
+          <p className="text-sm text-gray-500">Please hold while we fetch your results.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!analysis || error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <div className="text-center">
+          <h1 className="text-2xl mb-4">{error || 'Analysis not found'}</h1>
           <Button onClick={() => router.push('/')}>Go Home</Button>
         </div>
       </div>
@@ -71,6 +124,16 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
     } else {
       navigator.clipboard.writeText(text);
       alert('Copied to clipboard!');
+    }
+  };
+
+  const handleStartBattle = async () => {
+    try {
+      const battle = await api.createBattle(analysis.id);
+      router.push(`/battle/${battle.id}?analysis=${analysis.id}`);
+    } catch (err) {
+      console.error(err);
+      alert('Match failed, please try again');
     }
   };
 
@@ -303,7 +366,7 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }}>
             <Button
-              onClick={() => router.push(`/battle/${analysis.id}`)}
+              onClick={handleStartBattle}
               className="h-16 text-lg bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 w-full shadow-lg"
             >
               <Swords className="w-5 h-5 mr-2" />

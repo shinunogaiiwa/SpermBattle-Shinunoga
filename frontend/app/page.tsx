@@ -4,10 +4,10 @@ import React, { useState, useCallback } from 'react';
 import { Upload, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import { simulateAnalysis } from '@/lib/mockData';
 import { FloatingSperm } from '@/components/FloatingSperm';
 import { SpermSettings } from '@/components/SpermSettings';
 import { useAppStore } from '@/lib/store';
+import { api } from '@/lib/api';
 
 export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
@@ -28,30 +28,7 @@ export default function Home() {
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback(
-    async (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-
-      const files = Array.from(e.dataTransfer.files);
-      if (files.length > 0) {
-        await handleFile(files[0]);
-      }
-    },
-    []
-  );
-
-  const handleFileInput = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = e.target.files;
-      if (files && files.length > 0) {
-        await handleFile(files[0]);
-      }
-    },
-    []
-  );
-
-  const handleFile = async (file: File) => {
+  const handleFile = useCallback(async (file: File) => {
     const validTypes = [
       'image/jpeg',
       'image/png',
@@ -68,7 +45,7 @@ export default function Home() {
     setIsUploading(true);
 
     try {
-      const analysis = await simulateAnalysis(file);
+      const analysis = await api.uploadFile(file);
       setCurrentAnalysis(analysis);
       router.push(`/report/${analysis.id}`);
     } catch (error) {
@@ -77,7 +54,30 @@ export default function Home() {
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [router, setCurrentAnalysis]);
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length > 0) {
+        await handleFile(files[0]);
+      }
+    },
+    [handleFile]
+  );
+
+  const handleFileInput = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        await handleFile(files[0]);
+      }
+    },
+    [handleFile]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center p-4 relative overflow-hidden">

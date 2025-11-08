@@ -31,9 +31,13 @@ export interface LeaderboardEntry {
   user_id: number;
   username: string;
   title: string;
+  title_category: 'GOD' | 'MID' | 'TRASH' | 'OMEGA';
   score: number;
   country: string;
   country_flag: string;
+  wins?: number;
+  losses?: number;
+  win_rate?: number;
 }
 
 export interface Battle {

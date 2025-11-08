@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpermBattle
 
-## Getting Started
+Gamified sperm analysis playground built with a Next.js 14 frontend and a FastAPI backend.  
+The repo is now split into two top-level folders:
 
-First, run the development server:
+```
+backend/   # FastAPI service (uploads, leaderboard, battles)
+frontend/  # Next.js app (neon UI)
+```
+
+## Prerequisites
+
+- Node.js 18+
+- Python 3.11+
+
+## Backend (FastAPI)
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
+
+API routes:
+
+- `POST /api/analysis/upload` – mock analysis generation for uploaded files
+- `GET /api/analysis/{id}` – fetch a single analysis
+- `GET /api/leaderboard?category=global|shame|gaming`
+- `POST /api/battle` and `GET /api/battle/{id}` – create/fetch battles
+
+## Frontend (Next.js)
+
+```bash
+cd frontend
+npm install
+cp .env.example .env.local   # only if you need to override defaults
+```
+
+Ensure the `.env.local` points to the FastAPI server:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to use the app. Uploads, leaderboards, and battles now call the FastAPI backend.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development Tips
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Start both servers (frontend + backend) in separate terminals.
+- Restart the FastAPI server whenever you touch Python files; data resets because it lives in-memory.
+- Lint the frontend from `frontend/` with `npm run lint`.
