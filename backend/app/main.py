@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+import logging
 from typing import Literal, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import mock_data, schemas
+from . import ai_service, mock_data, schemas
 
 app = FastAPI(title="SpermBattle API", version="0.1.0")
+logger = logging.getLogger(__name__)
 
 app.add_middleware(
   CORSMiddleware,
@@ -51,8 +53,13 @@ def read_analysis(analysis_id: int) -> schemas.Analysis:
 async def upload_analysis(file: UploadFile = File(...)) -> schemas.Analysis:
   if not file:
     raise HTTPException(status_code=400, detail="File upload required")
-  await file.read()  # ensure stream consumed before generating mock analysis
-  return mock_data.simulate_analysis(file.filename)
+  try:
+    return await ai_service.analyze_upload(file)
+  except (RuntimeError, FileNotFoundError) as exc:
+    raise HTTPException(status_code=500, detail=str(exc)) from exc
+  except Exception as exc:  # pragma: no cover - defensive
+    logger.exception("Video analysis failed: {0}".format(file.filename))
+    raise HTTPException(status_code=500, detail="Failed to analyze video") from exc
 
 
 @app.post(

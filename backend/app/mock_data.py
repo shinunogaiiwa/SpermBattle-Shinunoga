@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 import random
 from datetime import datetime, timedelta
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from . import schemas
 
@@ -65,6 +65,14 @@ TITLES: Dict[schemas.TitleCategory, Dict[TitleRange, List[str]]] = {
     "0-19": ["🏴‍☠️ Population Crisis Solver", "🏴‍☠️ Extinction Helper"],
   },
 }
+
+
+def _clamp(value: float, minimum: float = 0.0, maximum: float = 100.0) -> float:
+  return max(minimum, min(maximum, value))
+
+
+def _clamp_fraction(value: float) -> float:
+  return max(0.05, min(0.95, value))
 
 mock_analyses: List[schemas.Analysis] = []
 mock_battles: Dict[int, schemas.Battle] = {}
@@ -265,6 +273,92 @@ def get_leaderboard(
       )
     )
   return result
+
+
+def register_ai_analysis(
+  file_name: str,
+  ai_payload: Dict[str, Any],
+  pixel_size: float = 1.0,
+) -> schemas.Analysis:
+  global analysis_counter
+  summary = (ai_payload or {}).get("summary") or {}
+  speed_stats = summary.get("physical_speed_stats") or summary.get(
+    "pixel_speed_stats"
+  ) or {}
+  fallback_stats = summary.get("pixel_speed_stats") or {}
+
+  def _stat(name: str) -> float:
+    raw = speed_stats.get(name) if speed_stats else None
+    if raw is None:
+      raw = fallback_stats.get(name)
+    return float(raw or 0.0)
+
+  mean_speed = _stat("mean")
+  max_speed = _stat("max")
+  sample_count = int(speed_stats.get("count") or fallback_stats.get("count") or 0)
+
+  tracks = ai_payload.get("tracks") or []
+  track_count = len(tracks)
+  active_tracks = 0
+  for track in tracks:
+    stats = track.get("speed_physical_stats") or track.get("speed_px_stats") or {}
+    track_mean = float(stats.get("mean") or 0.0)
+    if track_mean >= 5.0:
+      active_tracks += 1
+  normal_ratio = active_tracks / track_count if track_count else 0.0
+
+  total_sperm = max(track_count * 5, 5 if track_count else 3)
+  normal_count = max(1, int(total_sperm * max(0.25, normal_ratio * 0.9)))
+  cluster_count = max(0, int(total_sperm * 0.15))
+  pinhead_count = max(0, total_sperm - normal_count - cluster_count)
+
+  speed_component = _clamp(mean_speed * (2.0 if pixel_size == 1.0 else 1.2), 0, 80)
+  burst_component = _clamp(max_speed * 0.25, 0, 20)
+  coverage_component = _clamp(normal_ratio * 25, 0, 25)
+  quality_score = _clamp(20 + speed_component + burst_component + coverage_component)
+
+  quantity_score = _clamp(15 + track_count * 4 + sample_count / 150, 10, 100)
+  morphology_score = _clamp(30 + normal_ratio * 50 + min(track_count, 20), 10, 100)
+  motility_score = _clamp(quality_score * 0.85 + speed_component * 0.2, 15, 100)
+
+  title, category = _get_title_by_score(quality_score)
+
+  total_games = max(5, min(150, track_count * 3 or sample_count // 200 or 12))
+  win_rate_fraction = _clamp_fraction(
+    0.35 + (quality_score / 200) + normal_ratio * 0.3
+  )
+  wins = int(round(total_games * win_rate_fraction))
+  losses = max(0, total_games - wins)
+  win_rate = round(win_rate_fraction * 100, 1)
+
+  analysis_counter += 1
+  analysis_id = analysis_counter
+  analysis = schemas.Analysis(
+    id=analysis_id,
+    user_id=10_000 + analysis_id,
+    username="YOU",
+    country="US",
+    total_sperm=total_sperm,
+    normal_count=normal_count,
+    cluster_count=cluster_count,
+    pinhead_count=pinhead_count,
+    quality_score=round(quality_score, 1),
+    quantity_score=round(quantity_score, 1),
+    morphology_score=round(morphology_score, 1),
+    motility_score=round(motility_score, 1),
+    title=title,
+    title_category=category,
+    annotated_image_url="/placeholder-sperm.svg",
+    global_rank=0,
+    percentile=0,
+    created_at=datetime.utcnow(),
+    wins=wins,
+    losses=losses,
+    win_rate=win_rate,
+  )
+  mock_analyses.append(analysis)
+  _recalculate_ranks()
+  return get_analysis_by_id(analysis.id) or analysis
 
 
 def simulate_analysis(file_name: str) -> schemas.Analysis:

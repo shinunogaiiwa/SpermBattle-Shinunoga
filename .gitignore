@@ -55,3 +55,12 @@ frontend/next-env.d.ts
 backend/.venv
 backend/__pycache__/
 backend/**/*.pyc
+lib/ai/__pycache__/
+lib/ai/**/*.pyc
+lib/ai/runs/
+.DS_Store
+.idea/
+.vscode/
+.venv
+*.pyc
+__pycache__/

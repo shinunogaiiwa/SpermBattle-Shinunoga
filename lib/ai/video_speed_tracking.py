@@ -3,12 +3,12 @@
 
 实现思路：
 - 使用 YOLOv5 (DetectMultiBackend) 对视频逐帧检测。
-- 基于检测到的框中心，通过匈牙利算法 (scipy.optimize.linear_sum_assignment) 将相邻帧目标关联成轨迹。
+- 基于检测到的框中心，通过匈牙利算法 (内部实现的 linear_sum_assignment) 将相邻帧目标关联成轨迹。
 - 轨迹允许短暂的丢失 (max_age)，超过阈值自动终止。
 - 依据视频帧率计算像素速度，可选像素尺寸换算物理速度。
 - 结果输出为 JSON，包含每条轨迹的速度片段以及整体统计。
 
-依赖：scipy、numpy、torch、opencv-python、tqdm（随 YOLOv5 requirements 已包含）。
+依赖：numpy、torch、opencv-python、tqdm（随 YOLOv5 requirements 已包含）。
 """
 
 from __future__ import annotations
@@ -22,12 +22,12 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
-from scipy.optimize import linear_sum_assignment
 from tqdm import tqdm
 
 from models.common import DetectMultiBackend
 from utils.datasets import LoadImages
 from utils.general import LOGGER, check_img_size, non_max_suppression, scale_coords
+from utils.matching import linear_sum_assignment
 from utils.torch_utils import select_device
 
 
@@ -321,5 +321,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-

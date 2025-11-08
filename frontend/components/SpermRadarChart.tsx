@@ -12,10 +12,10 @@ import {
 } from 'recharts';
 
 interface SpermRadarChartProps {
-  quantityScore: number;
-  morphologyScore: number;
-  motilityScore: number;
-  qualityScore: number;
+  quantityScore?: number | null;
+  morphologyScore?: number | null;
+  motilityScore?: number | null;
+  qualityScore?: number | null;
 }
 
 export const SpermRadarChart: React.FC<SpermRadarChartProps> = ({
@@ -24,25 +24,28 @@ export const SpermRadarChart: React.FC<SpermRadarChartProps> = ({
   motilityScore,
   qualityScore,
 }) => {
+  const normalize = (value?: number | null) =>
+    typeof value === 'number' && Number.isFinite(value) ? value : 0;
+
   const data = [
     {
       subject: '数量',
-      score: quantityScore,
+      score: normalize(quantityScore),
       fullMark: 100,
     },
     {
       subject: '形态',
-      score: morphologyScore,
+      score: normalize(morphologyScore),
       fullMark: 100,
     },
     {
       subject: '速度',
-      score: motilityScore,
+      score: normalize(motilityScore),
       fullMark: 100,
     },
     {
       subject: '综合',
-      score: qualityScore,
+      score: normalize(qualityScore),
       fullMark: 100,
     },
   ];
