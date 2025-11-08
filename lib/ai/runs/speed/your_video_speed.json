@@ -1,0 +1,905 @@
+{
+  "video": "C:\\Users\\CenZining\\AppData\\Local\\Temp\\sperm_analyzer\\your_video.mp4",
+  "fps": 49.0,
+  "pixel_size": 1.0,
+  "max_distance": 80.0,
+  "max_age": 5,
+  "tracks": [
+    {
+      "id": 3,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 69.29646455628166,
+        "mean": 7.403329457138507,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 69.29646455628166,
+        "mean": 7.403329457138507,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 4,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 5.324316793825161,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 5.324316793825161,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 5,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1467,
+      "speed_px_stats": {
+        "count": 1467,
+        "min": 0.0,
+        "max": 131.93653777479534,
+        "mean": 10.227108464385118,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1467,
+        "min": 0.0,
+        "max": 131.93653777479534,
+        "mean": 10.227108464385118,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 6,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.706915586164841,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.706915586164841,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 12,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 245.0,
+        "mean": 9.114200290430174,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 245.0,
+        "mean": 9.114200290430174,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 15,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1461,
+      "speed_px_stats": {
+        "count": 1461,
+        "min": 0.0,
+        "max": 173.24116139070415,
+        "mean": 13.657240138485584,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1461,
+        "min": 0.0,
+        "max": 173.24116139070415,
+        "mean": 13.657240138485584,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 16,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1463,
+      "speed_px_stats": {
+        "count": 1463,
+        "min": 0.0,
+        "max": 220.5,
+        "mean": 9.39086708761884,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1463,
+        "min": 0.0,
+        "max": 220.5,
+        "mean": 9.39086708761884,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 19,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 73.5,
+        "mean": 11.308574273619163,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 73.5,
+        "mean": 11.308574273619163,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 20,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 98.0,
+        "mean": 9.352084179964361,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 98.0,
+        "mean": 9.352084179964361,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 21,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1462,
+      "speed_px_stats": {
+        "count": 1462,
+        "min": 0.0,
+        "max": 77.4758026741253,
+        "mean": 10.249895728618851,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1462,
+        "min": 0.0,
+        "max": 77.4758026741253,
+        "mean": 10.249895728618851,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 22,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1469,
+      "speed_px_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 10.22550593405236,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1469,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 10.22550593405236,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 80,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1355,
+      "speed_px_stats": {
+        "count": 1355,
+        "min": 0.0,
+        "max": 1115.7591586000988,
+        "mean": 15.843106609526387,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1355,
+        "min": 0.0,
+        "max": 1115.7591586000988,
+        "mean": 15.843106609526387,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 111,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1262,
+      "speed_px_stats": {
+        "count": 1262,
+        "min": 0.0,
+        "max": 101.01608782763269,
+        "mean": 10.607385969314326,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1262,
+        "min": 0.0,
+        "max": 101.01608782763269,
+        "mean": 10.607385969314326,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 114,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1253,
+      "speed_px_stats": {
+        "count": 1253,
+        "min": 0.0,
+        "max": 69.29646455628166,
+        "mean": 13.075397032182924,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1253,
+        "min": 0.0,
+        "max": 69.29646455628166,
+        "mean": 13.075397032182924,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 120,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1246,
+      "speed_px_stats": {
+        "count": 1246,
+        "min": 0.0,
+        "max": 296.03462635306704,
+        "mean": 12.709060123229003,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1246,
+        "min": 0.0,
+        "max": 296.03462635306704,
+        "mean": 12.709060123229003,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 135,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1119,
+      "speed_px_stats": {
+        "count": 1119,
+        "min": 0.0,
+        "max": 1410.400120533177,
+        "mean": 15.010901100418385,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1119,
+        "min": 0.0,
+        "max": 1410.400120533177,
+        "mean": 15.010901100418385,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 138,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1109,
+      "speed_px_stats": {
+        "count": 1109,
+        "min": 0.0,
+        "max": 149.02768199230638,
+        "mean": 12.248742114512757,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 1109,
+        "min": 0.0,
+        "max": 149.02768199230638,
+        "mean": 12.248742114512757,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 171,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 941,
+      "speed_px_stats": {
+        "count": 941,
+        "min": 0.0,
+        "max": 109.5673308974897,
+        "mean": 12.824873296446551,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 941,
+        "min": 0.0,
+        "max": 109.5673308974897,
+        "mean": 12.824873296446551,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 179,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 884,
+      "speed_px_stats": {
+        "count": 884,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 7.58417259165342,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 884,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 7.58417259165342,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 183,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 868,
+      "speed_px_stats": {
+        "count": 868,
+        "min": 0.0,
+        "max": 98.0,
+        "mean": 12.286244188902106,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 868,
+        "min": 0.0,
+        "max": 98.0,
+        "mean": 12.286244188902106,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 203,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 729,
+      "speed_px_stats": {
+        "count": 729,
+        "min": 0.0,
+        "max": 1775.9120368137606,
+        "mean": 10.478270854696309,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 729,
+        "min": 0.0,
+        "max": 1775.9120368137606,
+        "mean": 10.478270854696309,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 206,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 719,
+      "speed_px_stats": {
+        "count": 719,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.66777438620852,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 719,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.66777438620852,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 241,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 526,
+      "speed_px_stats": {
+        "count": 526,
+        "min": 0.0,
+        "max": 3863.6274729844235,
+        "mean": 26.125773664370637,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 526,
+        "min": 0.0,
+        "max": 3863.6274729844235,
+        "mean": 26.125773664370637,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 254,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 497,
+      "speed_px_stats": {
+        "count": 497,
+        "min": 0.0,
+        "max": 77.4758026741253,
+        "mean": 10.441817745341949,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 497,
+        "min": 0.0,
+        "max": 77.4758026741253,
+        "mean": 10.441817745341949,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 266,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 452,
+      "speed_px_stats": {
+        "count": 452,
+        "min": 0.0,
+        "max": 3677.0410998518905,
+        "mean": 30.630482026758173,
+        "median": 24.5
+      },
+      "speed_physical_stats": {
+        "count": 452,
+        "min": 0.0,
+        "max": 3677.0410998518905,
+        "mean": 30.630482026758173,
+        "median": 24.5
+      }
+    },
+    {
+      "id": 272,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 441,
+      "speed_px_stats": {
+        "count": 441,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.367581437853124,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 441,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.367581437853124,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 283,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 362,
+      "speed_px_stats": {
+        "count": 362,
+        "min": 0.0,
+        "max": 196.0,
+        "mean": 28.560510181072374,
+        "median": 24.5
+      },
+      "speed_physical_stats": {
+        "count": 362,
+        "min": 0.0,
+        "max": 196.0,
+        "mean": 28.560510181072374,
+        "median": 24.5
+      }
+    },
+    {
+      "id": 290,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 328,
+      "speed_px_stats": {
+        "count": 328,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 8.951744779701114,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 328,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 8.951744779701114,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 293,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 304,
+      "speed_px_stats": {
+        "count": 304,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 9.94850696787888,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 304,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 9.94850696787888,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 294,
+      "class_id": 1,
+      "class_name": "cluster",
+      "sample_count": 299,
+      "speed_px_stats": {
+        "count": 299,
+        "min": 0.0,
+        "max": 122.5,
+        "mean": 26.127497021905423,
+        "median": 24.5
+      },
+      "speed_physical_stats": {
+        "count": 299,
+        "min": 0.0,
+        "max": 122.5,
+        "mean": 26.127497021905423,
+        "median": 24.5
+      }
+    },
+    {
+      "id": 296,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 288,
+      "speed_px_stats": {
+        "count": 288,
+        "min": 0.0,
+        "max": 245.0,
+        "mean": 60.42229202482403,
+        "median": 54.78366544874485
+      },
+      "speed_physical_stats": {
+        "count": 288,
+        "min": 0.0,
+        "max": 245.0,
+        "mean": 60.42229202482403,
+        "median": 54.78366544874485
+      }
+    },
+    {
+      "id": 298,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 281,
+      "speed_px_stats": {
+        "count": 281,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.604522936208639,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 281,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 6.604522936208639,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 304,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 257,
+      "speed_px_stats": {
+        "count": 257,
+        "min": 0.0,
+        "max": 49.0,
+        "mean": 7.679496323188904,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 257,
+        "min": 0.0,
+        "max": 49.0,
+        "mean": 7.679496323188904,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 306,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 249,
+      "speed_px_stats": {
+        "count": 249,
+        "min": 0.0,
+        "max": 255.78750946830849,
+        "mean": 66.40348294194764,
+        "median": 54.78366544874485
+      },
+      "speed_physical_stats": {
+        "count": 249,
+        "min": 0.0,
+        "max": 255.78750946830849,
+        "mean": 66.40348294194764,
+        "median": 54.78366544874485
+      }
+    },
+    {
+      "id": 309,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 191,
+      "speed_px_stats": {
+        "count": 191,
+        "min": 0.0,
+        "max": 197.52531483331444,
+        "mean": 19.832561941771374,
+        "median": 24.5
+      },
+      "speed_physical_stats": {
+        "count": 191,
+        "min": 0.0,
+        "max": 197.52531483331444,
+        "mean": 19.832561941771374,
+        "median": 24.5
+      }
+    },
+    {
+      "id": 318,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 132,
+      "speed_px_stats": {
+        "count": 132,
+        "min": 0.0,
+        "max": 149.02768199230638,
+        "mean": 48.84613656831566,
+        "median": 49.0
+      },
+      "speed_physical_stats": {
+        "count": 132,
+        "min": 0.0,
+        "max": 149.02768199230638,
+        "mean": 48.84613656831566,
+        "median": 49.0
+      }
+    },
+    {
+      "id": 319,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 116,
+      "speed_px_stats": {
+        "count": 116,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 8.22946341337942,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 116,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 8.22946341337942,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 320,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 111,
+      "speed_px_stats": {
+        "count": 111,
+        "min": 0.0,
+        "max": 242.5376259469858,
+        "mean": 42.05806743424102,
+        "median": 49.0
+      },
+      "speed_physical_stats": {
+        "count": 111,
+        "min": 0.0,
+        "max": 242.5376259469858,
+        "mean": 42.05806743424102,
+        "median": 49.0
+      }
+    },
+    {
+      "id": 328,
+      "class_id": 1,
+      "class_name": "cluster",
+      "sample_count": 58,
+      "speed_px_stats": {
+        "count": 58,
+        "min": 0.0,
+        "max": 109.5673308974897,
+        "mean": 15.815868662034333,
+        "median": 12.25
+      },
+      "speed_physical_stats": {
+        "count": 58,
+        "min": 0.0,
+        "max": 109.5673308974897,
+        "mean": 15.815868662034333,
+        "median": 12.25
+      }
+    },
+    {
+      "id": 334,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 21,
+      "speed_px_stats": {
+        "count": 21,
+        "min": 0.0,
+        "max": 34.64823227814083,
+        "mean": 11.466498312203887,
+        "median": 0.0
+      },
+      "speed_physical_stats": {
+        "count": 21,
+        "min": 0.0,
+        "max": 34.64823227814083,
+        "mean": 11.466498312203887,
+        "median": 0.0
+      }
+    },
+    {
+      "id": 335,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 10,
+      "speed_px_stats": {
+        "count": 10,
+        "min": 49.0,
+        "max": 279.3429791492888,
+        "mean": 134.124249637169,
+        "median": 111.75804391381635
+      },
+      "speed_physical_stats": {
+        "count": 10,
+        "min": 49.0,
+        "max": 279.3429791492888,
+        "mean": 134.124249637169,
+        "median": 111.75804391381635
+      }
+    },
+    {
+      "id": 336,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 9,
+      "speed_px_stats": {
+        "count": 9,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 28.525373587018592,
+        "median": 24.5
+      },
+      "speed_physical_stats": {
+        "count": 9,
+        "min": 0.0,
+        "max": 54.78366544874485,
+        "mean": 28.525373587018592,
+        "median": 24.5
+      }
+    },
+    {
+      "id": 337,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1,
+      "speed_px_stats": {
+        "count": 1,
+        "min": 693.328356552651,
+        "max": 693.328356552651,
+        "mean": 693.328356552651,
+        "median": 693.328356552651
+      },
+      "speed_physical_stats": {
+        "count": 1,
+        "min": 693.328356552651,
+        "max": 693.328356552651,
+        "mean": 693.328356552651,
+        "median": 693.328356552651
+      }
+    },
+    {
+      "id": 338,
+      "class_id": 0,
+      "class_name": "sperm",
+      "sample_count": 1,
+      "speed_px_stats": {
+        "count": 1,
+        "min": 49.0,
+        "max": 49.0,
+        "mean": 49.0,
+        "median": 49.0
+      },
+      "speed_physical_stats": {
+        "count": 1,
+        "min": 49.0,
+        "max": 49.0,
+        "mean": 49.0,
+        "median": 49.0
+      }
+    }
+  ],
+  "summary": {
+    "pixel_speed_stats": {
+      "count": 32555,
+      "min": 0.0,
+      "max": 3863.6274729844235,
+      "mean": 12.506018793001036,
+      "median": 0.0
+    },
+    "physical_speed_stats": {
+      "count": 32555,
+      "min": 0.0,
+      "max": 3863.6274729844235,
+      "mean": 12.506018793001036,
+      "median": 0.0
+    }
+  }
+}
