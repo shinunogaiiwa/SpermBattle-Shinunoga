@@ -41,10 +41,10 @@ TitleRange = Literal[
 
 TITLES: Dict[schemas.TitleCategory, Dict[TitleRange, List[str]]] = {
   "GOD": {
-    "95-100": ["🏆 Sperm Deity", "🏆 Fertility Deity"],
-    "90-94": ["💪 Fertility Beast", "💪 Alpha Breeder"],
-    "85-89": ["🔥 Baby Maker Supreme", "🔥 Population Booster"],
-    "80-84": ["👑 King of Raw Dogs", "👑 Condom Hater"],
+    '95-100': ['🏆 Top-tier stud', '🏆 Fertility Deity'],
+    '90-94': ['💪 Fertility Beast', '💪 Guardian of Pensions'],
+    '85-89': ['🔥 Baby Maker Supreme', '🔥 Qualified sperm donor'],
+    '80-84': ['👑 King of Raw Dogs', '👑 Condom Hater'],
   },
   "MID": {
     "75-79": ["🤷 Normie NPC", "🤷 Average Joe"],
@@ -60,9 +60,9 @@ TITLES: Dict[schemas.TitleCategory, Dict[TitleRange, List[str]]] = {
   },
   "OMEGA": {
     "35-39": ["💀 Sperm Parking Lot", "💀 They Ain't Moving Chief"],
-    "30-34": ["🪦 Sperm Cemetery", "🪦 F in the Chat"],
-    "20-29": ["🚫 Bloodline Ender", "🚫 Family Tree Terminator"],
-    "0-19": ["🏴‍☠️ Population Crisis Solver", "🏴‍☠️ Extinction Helper"],
+    "30-34": ["🪦 Pioneer of natural vasectomy", "🪦 F in the Chat"],
+    "20-29": ["🚫 Freedom to stay still", "🚫 Family Tree Terminator"],
+    "0-19": ["🏴‍☠️ Population Crisis Solver", "🏴‍☠️ Eco guardian"],
   },
 }
 
