@@ -301,17 +301,80 @@ def register_ai_analysis(
   tracks = ai_payload.get("tracks") or []
   track_count = len(tracks)
   active_tracks = 0
+  
+  # 基于真实的 class_name 统计
+  normal_count_raw = 0
+  cluster_count_raw = 0
+  pinhead_count_raw = 0
+  
+  # 调试：收集所有类别名称
+  class_names_found = []
+  
   for track in tracks:
     stats = track.get("speed_physical_stats") or track.get("speed_px_stats") or {}
     track_mean = float(stats.get("mean") or 0.0)
     if track_mean >= 5.0:
       active_tracks += 1
+    
+    # 获取类别信息
+    class_name = str(track.get("class_name", "")).lower().strip()
+    class_id = track.get("class_id", -1)
+    class_names_found.append(f"{class_name}(id={class_id})")
+    
+    # 基于 class_name 统计（匹配颜色映射逻辑）
+    # 颜色映射：sperm/normal -> 红色, cluster -> 绿色, pinhead/small_or_pinhead -> 蓝色
+    if "normal" in class_name or ("sperm" in class_name and "cluster" not in class_name and "pinhead" not in class_name and "small" not in class_name):
+      normal_count_raw += 1  # 红色 -> normal
+    elif "cluster" in class_name:
+      cluster_count_raw += 1  # 绿色 -> cluster
+    elif "pinhead" in class_name or "small" in class_name:
+      pinhead_count_raw += 1  # 蓝色 -> pinhead
+    else:
+      # 如果 class_name 不匹配，尝试用 class_id（常见映射：0=normal, 1=cluster, 2=pinhead）
+      if class_id == 0:
+        normal_count_raw += 1
+      elif class_id == 1:
+        cluster_count_raw += 1
+      elif class_id == 2:
+        pinhead_count_raw += 1
+      else:
+        # 默认归类为 normal
+        normal_count_raw += 1
+  
+  # 调试输出
+  print("\n" + "="*60)
+  print("=== DEBUG: 精子类别统计 ===")
+  print(f"总轨迹数: {track_count}")
+  unique_classes = set(class_names_found)
+  print(f"发现的唯一类别: {list(unique_classes)[:10]}")  # 只显示前10个
+  print(f"基于 class_name 统计:")
+  print(f"  Normal (红色): {normal_count_raw}")
+  print(f"  Cluster (绿色): {cluster_count_raw}")
+  print(f"  Pinhead (蓝色): {pinhead_count_raw}")
+  print("="*60 + "\n")
+  
   normal_ratio = active_tracks / track_count if track_count else 0.0
 
-  total_sperm = max(track_count * 5, 5 if track_count else 3)
-  normal_count = max(1, int(total_sperm * max(0.25, normal_ratio * 0.9)))
-  cluster_count = max(0, int(total_sperm * 0.15))
-  pinhead_count = max(0, total_sperm - normal_count - cluster_count)
+  # 使用真实统计结果，但确保至少有一些数量
+  total_sperm = max(track_count, normal_count_raw + cluster_count_raw + pinhead_count_raw, 1)
+  
+  # 如果统计结果为空，使用回退逻辑
+  if normal_count_raw == 0 and cluster_count_raw == 0 and pinhead_count_raw == 0:
+    normal_count = max(1, int(total_sperm * max(0.25, normal_ratio * 0.9)))
+    cluster_count = max(0, int(total_sperm * 0.15))
+    pinhead_count = max(0, total_sperm - normal_count - cluster_count)
+  else:
+    # 使用真实统计，但按比例调整以匹配 total_sperm
+    if total_sperm > track_count:
+      # 如果 total_sperm 被放大了，按比例调整
+      scale = total_sperm / track_count
+      normal_count = max(1, int(normal_count_raw * scale))
+      cluster_count = max(0, int(cluster_count_raw * scale))
+      pinhead_count = max(0, total_sperm - normal_count - cluster_count)
+    else:
+      normal_count = max(1, normal_count_raw)
+      cluster_count = max(0, cluster_count_raw)
+      pinhead_count = max(0, pinhead_count_raw)
 
   speed_component = _clamp(mean_speed * (2.0 if pixel_size == 1.0 else 1.2), 0, 80)
   burst_component = _clamp(max_speed * 0.25, 0, 20)

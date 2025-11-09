@@ -155,6 +155,13 @@ def detect_and_track(
     model = DetectMultiBackend(weights, device=device)
     stride, names, pt = model.stride, model.names, model.pt
     imgsz = check_img_size(imgsz, s=stride)
+    
+    # 调试：输出模型类别名称
+    print("\n" + "="*60)
+    print("=== DEBUG: 模型类别信息 ===")
+    print(f"模型类别名称列表: {names}")
+    print(f"类别数量: {len(names)}")
+    print("="*60 + "\n")
 
     dataset = LoadImages(str(source), img_size=imgsz, stride=stride, auto=pt)
     if not any(dataset.video_flag):
@@ -172,13 +179,15 @@ def detect_and_track(
 
     preview_written = False
 
+    # OpenCV expects BGR color tuples.
     class_colors = {
-        "sperm": (255, 0, 0),  # normal -> red
-        "normal": (255, 0, 0),
+        "sperm": (0, 0, 255),  # normal -> red
+        "normal": (0, 0, 255),
         "cluster": (0, 255, 0),  # green
-        "small_or_pinhead": (0, 128, 255),  # blue-ish
-        "pinhead": (0, 128, 255),
+        "small_or_pinhead": (255, 0, 0),  # blue
+        "pinhead": (255, 0, 0),
     }
+    fallback_color = (68, 87, 255)  # default to a red-ish tone (BGR)
     for frame_idx, (_, im, im0, _, _) in enumerate(tqdm(dataset, desc="Detecting"), start=0):
         if dataset.mode != "video":
             continue
@@ -202,11 +211,28 @@ def detect_and_track(
 
         if preview_path and not preview_written and len(detections):
             annotated = im0.copy()
+            # 调试：预览图生成时的类别和颜色信息
+            print("\n" + "="*60)
+            print("=== DEBUG: 预览图生成 ===")
+            print(f"第一帧检测到的框数量: {len(detections)}")
+            color_count = {"red": 0, "green": 0, "blue": 0, "other": 0}
             for bbox, cls_id in detections:
                 x1, y1, x2, y2 = bbox.astype(int)
                 name = names[cls_id] if cls_id < len(names) else str(cls_id)
-                color = class_colors.get(name.lower(), (255, 87, 68))
+                color = class_colors.get(name.lower(), fallback_color)
+                # 统计颜色
+                if color == (0, 0, 255):
+                    color_count["red"] += 1
+                elif color == (0, 255, 0):
+                    color_count["green"] += 1
+                elif color == (255, 0, 0):
+                    color_count["blue"] += 1
+                else:
+                    color_count["other"] += 1
+                print(f"  cls_id={cls_id}, name='{name}', color={color} (BGR)")
                 cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
+            print(f"颜色统计: 红色={color_count['red']}, 绿色={color_count['green']}, 蓝色={color_count['blue']}, 其他={color_count['other']}")
+            print("="*60 + "\n")
             preview_path.parent.mkdir(parents=True, exist_ok=True)
             cv2.imwrite(str(preview_path), annotated)
             preview_written = True

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Upload, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
@@ -9,12 +9,22 @@ import { SpermSettings } from '@/components/SpermSettings';
 import { useAppStore } from '@/lib/store';
 import { api } from '@/lib/api';
 
+const PROGRESS_STEPS = [
+  'Calibrating battle arena',
+  'Tracking every swimmer',
+  'Crunching velocity + burst stats',
+  'Forging leaderboard taunts',
+  'Arming the roast cannon',
+];
+
 export default function Home() {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [spermVisible, setSpermVisible] = useState(true);
   const [spermDensity, setSpermDensity] = useState(15);
   const [spermSpeed, setSpermSpeed] = useState(1);
+  const [analyzeProgress, setAnalyzeProgress] = useState(0);
+  const [progressStage, setProgressStage] = useState(0);
   const router = useRouter();
   const setCurrentAnalysis = useAppStore(state => state.setCurrentAnalysis);
 
@@ -68,6 +78,44 @@ export default function Home() {
     },
     [handleFile]
   );
+
+  useEffect(() => {
+    if (isUploading) {
+      setAnalyzeProgress(6);
+      setProgressStage(0);
+
+      const progressInterval = setInterval(() => {
+        setAnalyzeProgress(prev => {
+          if (prev >= 96) {
+            return prev;
+          }
+          const next = prev + Math.random() * 7;
+          return next >= 96 ? 96 : next;
+        });
+      }, 600);
+
+      const stageInterval = setInterval(() => {
+        setProgressStage(prev => (prev + 1) % PROGRESS_STEPS.length);
+      }, 1800);
+
+      return () => {
+        clearInterval(progressInterval);
+        clearInterval(stageInterval);
+      };
+    }
+
+    setProgressStage(PROGRESS_STEPS.length - 1);
+    setAnalyzeProgress(prev => (prev > 0 ? 100 : 0));
+
+    const resetTimeout = setTimeout(() => {
+      setProgressStage(0);
+      setAnalyzeProgress(0);
+    }, 800);
+
+    return () => {
+      clearTimeout(resetTimeout);
+    };
+  }, [isUploading]);
 
   const handleFileInput = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,6 +249,21 @@ export default function Home() {
                 <p className="text-gray-400 text-sm">
                   Detecting count, morphology, motility...
                 </p>
+                <div className="mt-6 space-y-2 text-left">
+                  <div className="flex items-center justify-between text-[11px] uppercase tracking-widest text-gray-500">
+                    <span className="truncate pr-4">
+                      {PROGRESS_STEPS[progressStage]}
+                    </span>
+                    <span>{Math.min(100, Math.round(analyzeProgress))}%</span>
+                  </div>
+                  <div className="h-3 w-full bg-gray-800/70 rounded-full border border-gray-700 overflow-hidden">
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-red-500 via-purple-500 to-cyan-500 shadow-lg"
+                      animate={{ width: `${Math.min(analyzeProgress, 100)}%` }}
+                      transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    />
+                  </div>
+                </div>
               </>
             ) : (
               <>

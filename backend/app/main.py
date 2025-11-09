@@ -89,3 +89,14 @@ def read_battle(battle_id: int) -> schemas.Battle:
   if not battle:
     raise HTTPException(status_code=404, detail="Battle not found")
   return battle
+
+
+if __name__ == "__main__":
+  import uvicorn
+  # 直接运行 app 对象，而不是通过字符串路径
+  uvicorn.run(
+    app,
+    host="0.0.0.0",
+    port=8000,
+    reload=True,
+  )

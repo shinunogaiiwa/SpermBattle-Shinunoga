@@ -1,14 +1,2 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-export default function UploadPage() {
-  const router = useRouter();
-  
-  useEffect(() => {
-    router.push('/');
-  }, [router]);
-
-  return null;
-}
+// Reuse the Home page for /upload so both routes render the same UI
+export { default } from '../page';
