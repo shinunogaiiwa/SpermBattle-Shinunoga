@@ -21,6 +21,15 @@ const roastComments = [
   { user: 'Anonymous', message: 'F in the chat' },
 ];
 
+const hypeComments = [
+  { user: 'GeneChamp', message: 'Never seen motility stats spike like that—clinic reports will be jealous.' },
+  { user: 'LabCoach', message: 'Sample looked textbook perfect, even the tail whip cadence stayed on beat.' },
+  { user: 'PixelPilot', message: 'Frame-by-frame review shows those swimmers holding their lane like pros.' },
+  { user: 'MetaMorph', message: 'Morphology and velocity both in the green zone? That combo is rare.' },
+  { user: 'Fertilizer', message: 'High progressive motility with zero lateral drift—absolute clinic.' },
+  { user: 'DataWhisperer', message: 'Downstream analytics flagged elite stamina across the entire cohort.' },
+];
+
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState<LeaderboardCategory>('global');
   const [leaderboard, setLeaderboard] = useState<Array<LeaderboardEntry & { healthData?: UserHealthData }>>([]);
@@ -168,6 +177,7 @@ export default function LeaderboardPage() {
                   const isCurrentUser = currentAnalysis && entry.analysis_id === currentAnalysis.id;
                   const isShameBoard = activeTab === 'shame';
                   const isGamingBoard = activeTab === 'gaming';
+                  const isGlobalBoard = activeTab === 'global';
 
                   return (
                     <motion.div
@@ -281,6 +291,29 @@ export default function LeaderboardPage() {
                                 <span className="text-cyan-400">{comment.user}:</span> {comment.message}
                               </div>
                             ))}
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {isGlobalBoard && (
+                        <motion.div
+                          className="mt-3 pt-3 border-t border-gray-800"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.25 }}
+                        >
+                          <div className="flex items-center gap-2 mb-2 text-xs text-gray-500">
+                            <MessageCircle className="w-3 h-3" />
+                            Comments
+                          </div>
+                          <div className="space-y-1">
+                            {[hypeComments[index % hypeComments.length], hypeComments[(index + 1) % hypeComments.length]].map(
+                              (comment, idx) => (
+                                <div key={idx} className="text-xs text-gray-300">
+                                  <span className="text-purple-400">{comment.user}:</span> {comment.message}
+                                </div>
+                              ),
+                            )}
                           </div>
                         </motion.div>
                       )}
