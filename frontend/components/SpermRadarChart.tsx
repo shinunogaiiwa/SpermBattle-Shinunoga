@@ -29,22 +29,22 @@ export const SpermRadarChart: React.FC<SpermRadarChartProps> = ({
 
   const data = [
     {
-      subject: '数量',
+      subject: 'Quantity',
       score: normalize(quantityScore),
       fullMark: 100,
     },
     {
-      subject: '形态',
+      subject: 'Morphology',
       score: normalize(morphologyScore),
       fullMark: 100,
     },
     {
-      subject: '速度',
+      subject: 'Motility',
       score: normalize(motilityScore),
       fullMark: 100,
     },
     {
-      subject: '综合',
+      subject: 'Quality',
       score: normalize(qualityScore),
       fullMark: 100,
     },
@@ -61,7 +61,7 @@ export const SpermRadarChart: React.FC<SpermRadarChartProps> = ({
           />
           <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280' }} />
           <Radar
-            name="评分"
+            name="Score"
             dataKey="score"
             stroke="#FF5744"
             fill="#FF5744"

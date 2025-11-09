@@ -20,6 +20,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import cv2
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -147,7 +148,8 @@ def detect_and_track(
     max_age: int,
     class_filter: Optional[List[int]],
     output: Path,
-        emit_segments: bool,
+    emit_segments: bool,
+    preview_path: Optional[Path] = None,
 ) -> None:
     device = select_device(device)
     model = DetectMultiBackend(weights, device=device)
@@ -168,6 +170,15 @@ def detect_and_track(
 
     model.warmup(imgsz=(1 if pt else 1, 3, imgsz, imgsz))
 
+    preview_written = False
+
+    class_colors = {
+        "sperm": (255, 0, 0),  # normal -> red
+        "normal": (255, 0, 0),
+        "cluster": (0, 255, 0),  # green
+        "small_or_pinhead": (0, 128, 255),  # blue-ish
+        "pinhead": (0, 128, 255),
+    }
     for frame_idx, (_, im, im0, _, _) in enumerate(tqdm(dataset, desc="Detecting"), start=0):
         if dataset.mode != "video":
             continue
@@ -188,6 +199,17 @@ def detect_and_track(
             for *xyxy, conf, cls in det:
                 cls_id = int(cls.item())
                 detections.append((torch.tensor(xyxy).cpu().numpy(), cls_id))
+
+        if preview_path and not preview_written and len(detections):
+            annotated = im0.copy()
+            for bbox, cls_id in detections:
+                x1, y1, x2, y2 = bbox.astype(int)
+                name = names[cls_id] if cls_id < len(names) else str(cls_id)
+                color = class_colors.get(name.lower(), (255, 87, 68))
+                cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
+            preview_path.parent.mkdir(parents=True, exist_ok=True)
+            cv2.imwrite(str(preview_path), annotated)
+            preview_written = True
 
         # 匹配
         matched, unmatched_tracks, unmatched_dets = associate_detections_to_tracks(
@@ -235,6 +257,8 @@ def detect_and_track(
         "tracks": [],
         "summary": summary,
     }
+    if preview_path and preview_written:
+        payload["preview_image"] = str(preview_path)
     for t in tracks:
         stats = summarize_tracks([t])
         track_info = {

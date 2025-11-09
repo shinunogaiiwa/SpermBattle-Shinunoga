@@ -279,6 +279,7 @@ def register_ai_analysis(
   file_name: str,
   ai_payload: Dict[str, Any],
   pixel_size: float = 1.0,
+  annotated_image_url: Optional[str] = None,
 ) -> schemas.Analysis:
   global analysis_counter
   summary = (ai_payload or {}).get("summary") or {}
@@ -348,7 +349,7 @@ def register_ai_analysis(
     motility_score=round(motility_score, 1),
     title=title,
     title_category=category,
-    annotated_image_url="/placeholder-sperm.svg",
+    annotated_image_url=annotated_image_url or "/placeholder-sperm.svg",
     global_rank=0,
     percentile=0,
     created_at=datetime.utcnow(),

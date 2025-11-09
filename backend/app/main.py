@@ -1,15 +1,22 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Literal, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from . import ai_service, mock_data, schemas
 
 app = FastAPI(title="SpermBattle API", version="0.1.0")
 logger = logging.getLogger(__name__)
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+AI_MEDIA_DIR = (REPO_ROOT / "lib" / "ai" / "runs").resolve()
+AI_MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/media/ai", StaticFiles(directory=AI_MEDIA_DIR), name="ai-media")
 
 app.add_middleware(
   CORSMiddleware,

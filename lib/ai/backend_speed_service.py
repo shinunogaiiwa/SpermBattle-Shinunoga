@@ -37,6 +37,7 @@ class SpeedAnalyzer:
         max_age: int = 5,
         output_dir: Path | str = Path("runs/speed"),
         emit_segments: bool = False,
+        preview_dir: Optional[Path | str] = None,
     ) -> None:
         self.weights = Path(weights)
         self.imgsz = imgsz
@@ -47,6 +48,7 @@ class SpeedAnalyzer:
         self.max_age = max_age
         self.output_dir = Path(output_dir)
         self.emit_segments = emit_segments
+        self.preview_dir = Path(preview_dir) if preview_dir else (self.output_dir / "previews")
         self._lock = threading.Lock()
 
     def run(
@@ -68,11 +70,16 @@ class SpeedAnalyzer:
         if not video_path.exists():
             raise FileNotFoundError(f"视频不存在：{video_path}")
 
+        safe_name = video_path.stem.replace(" ", "_")
+
         if output_path:
             output_path = Path(output_path).resolve()
         else:
-            safe_name = video_path.stem.replace(" ", "_")
             output_path = (self.output_dir / f"{safe_name}_speed.json").resolve()
+        preview_path: Optional[Path] = None
+        if self.preview_dir:
+            preview_path = (self.preview_dir / f"{safe_name}_preview.jpg").resolve()
+            preview_path.parent.mkdir(parents=True, exist_ok=True)
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -91,14 +98,16 @@ class SpeedAnalyzer:
                 class_filter=class_filter,
                 output=output_path,
                 emit_segments=self.emit_segments,
+                preview_path=preview_path,
             )
 
-        return json.loads(output_path.read_text(encoding="utf-8"))
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+        if preview_path and preview_path.exists():
+            payload.setdefault("preview_image", str(preview_path))
+        return payload
 
 
 if __name__ == "__main__":
     analyzer = SpeedAnalyzer()
     result = analyzer.run(video_path="../sample_video/11.mp4", pixel_size=0.32)
     print(json.dumps(result["summary"], ensure_ascii=False, indent=2))
-
-

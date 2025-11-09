@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface AnnotatedImageProps {
   imageUrl: string;
@@ -16,35 +15,61 @@ export const AnnotatedImage: React.FC<AnnotatedImageProps> = ({
   clusterCount,
   pinheadCount,
 }) => {
-  const [currentSrc, setCurrentSrc] = useState<string>(
-    imageUrl || '/placeholder-sperm.svg'
+  const placeholderSrc = '/placeholder-sperm.svg';
+
+  const resolveSrc = useMemo(() => {
+    if (!imageUrl) {
+      return placeholderSrc;
+    }
+    if (imageUrl.startsWith('/media/ai')) {
+      const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
+      return base ? `${base}${imageUrl}` : imageUrl;
+    }
+    return imageUrl;
+  }, [imageUrl, placeholderSrc]);
+
+  const [currentSrc, setCurrentSrc] = useState<string>(resolveSrc);
+  const [isPlaceholder, setIsPlaceholder] = useState<boolean>(
+    resolveSrc === placeholderSrc
   );
+
+  useEffect(() => {
+    setCurrentSrc(resolveSrc);
+    setIsPlaceholder(resolveSrc === placeholderSrc);
+  }, [resolveSrc]);
 
   return (
     <div className="space-y-4">
       <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video border border-gray-700">
-        <Image
+        <img
           src={currentSrc}
           alt="Sperm analysis"
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 640px"
-          onError={() => setCurrentSrc('/placeholder-sperm.svg')}
+          className="object-cover w-full h-full"
+          onError={() => {
+            setCurrentSrc(placeholderSrc);
+            setIsPlaceholder(true);
+          }}
+          onLoad={() => {
+            setIsPlaceholder(currentSrc === placeholderSrc);
+          }}
         />
-        
-        {/* Simulated bounding boxes */}
-        <div className="absolute top-4 left-4">
-          <div className="bg-red-500/20 border-2 border-red-500 rounded w-16 h-16" />
-        </div>
-        <div className="absolute top-12 right-8">
-          <div className="bg-red-500/20 border-2 border-red-500 rounded w-12 h-12" />
-        </div>
-        <div className="absolute bottom-8 left-12">
-          <div className="bg-green-500/20 border-2 border-green-500 rounded w-20 h-16" />
-        </div>
-        <div className="absolute bottom-12 right-12">
-          <div className="bg-blue-500/20 border-2 border-blue-500 rounded w-10 h-10" />
-        </div>
+
+        {isPlaceholder && (
+          <>
+            <div className="absolute top-4 left-4">
+              <div className="bg-red-500/20 border-2 border-red-500 rounded w-16 h-16" />
+            </div>
+            <div className="absolute top-12 right-8">
+              <div className="bg-red-500/20 border-2 border-red-500 rounded w-12 h-12" />
+            </div>
+            <div className="absolute bottom-8 left-12">
+              <div className="bg-green-500/20 border-2 border-green-500 rounded w-20 h-16" />
+            </div>
+            <div className="absolute bottom-12 right-12">
+              <div className="bg-blue-500/20 border-2 border-blue-500 rounded w-10 h-10" />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Legend */}

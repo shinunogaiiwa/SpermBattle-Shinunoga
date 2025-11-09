@@ -243,6 +243,37 @@ export default function ReportPage({ params }: { params: { id: string } }) {
               <div className="text-xs text-gray-600">Overall</div>
             </div>
           </div>
+          <div className="mt-6 space-y-3 text-sm text-gray-300">
+            <p className="text-xs uppercase tracking-wide text-gray-400">
+              How we calculate these stats
+            </p>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="p-3 rounded-lg bg-gray-800/80 border border-gray-700">
+                <div className="font-semibold text-gray-100">Quantity Score</div>
+                <p className="text-gray-400 mt-1">
+                  Scales with the number of detected tracks and samples per second from the YOLO run.
+                </p>
+              </div>
+              <div className="p-3 rounded-lg bg-gray-800/80 border border-gray-700">
+                <div className="font-semibold text-gray-100">Morphology Score</div>
+                <p className="text-gray-400 mt-1">
+                  Rewards a higher ratio of active tracks (mean speed ≥ 5px/s) versus noisy detections.
+                </p>
+              </div>
+              <div className="p-3 rounded-lg bg-gray-800/80 border border-gray-700">
+                <div className="font-semibold text-gray-100">Motility Score</div>
+                <p className="text-gray-400 mt-1">
+                  Uses the analyzer&apos;s average speed plus burst spikes to represent mobility.
+                </p>
+              </div>
+              <div className="p-3 rounded-lg bg-gray-800/80 border border-gray-700 md:col-span-2">
+                <div className="font-semibold text-gray-100">Overall (Quality) Score</div>
+                <p className="text-gray-400 mt-1">
+                  A weighted blend of speed, burst potential, and coverage. The same value drives your title and leaderboard rank.
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Annotated Image */}
