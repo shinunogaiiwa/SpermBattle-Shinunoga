@@ -306,14 +306,23 @@ def register_ai_analysis(
   normal_count_raw = 0
   cluster_count_raw = 0
   pinhead_count_raw = 0
+  dead_sperm_count = 0  # 统计不动的精子（死精）
   
   # 调试：收集所有类别名称
   class_names_found = []
   
+  # WHO 精液分析标准：
+  # - 前向运动（PR）：速度 >= 25 μm/s（或 >= 5.0 像素/秒）
+  # - 非前向运动（NP）：0 < 速度 < 25 μm/s
+  # - 不动（IM）：速度 = 0
+  MIN_ACTIVE_SPEED = 5.0  # 最低活跃速度阈值（像素/秒）
+  
   for track in tracks:
     stats = track.get("speed_physical_stats") or track.get("speed_px_stats") or {}
     track_mean = float(stats.get("mean") or 0.0)
-    if track_mean >= 5.0:
+    is_active = track_mean >= MIN_ACTIVE_SPEED
+    
+    if is_active:
       active_tracks += 1
     
     # 获取类别信息
@@ -321,41 +330,54 @@ def register_ai_analysis(
     class_id = track.get("class_id", -1)
     class_names_found.append(f"{class_name}(id={class_id})")
     
-    # 基于 class_name 统计（匹配颜色映射逻辑）
-    # 颜色映射：sperm/normal -> 红色, cluster -> 绿色, pinhead/small_or_pinhead -> 蓝色
-    if "normal" in class_name or ("sperm" in class_name and "cluster" not in class_name and "pinhead" not in class_name and "small" not in class_name):
-      normal_count_raw += 1  # 红色 -> normal
-    elif "cluster" in class_name:
+    # 判断形态是否正常
+    is_normal_morphology = (
+      "normal" in class_name or 
+      ("sperm" in class_name and "cluster" not in class_name and "pinhead" not in class_name and "small" not in class_name)
+    )
+    if not is_normal_morphology and class_id == 0:
+      is_normal_morphology = True
+    
+    # 基于形态 + 运动性统计
+    # 关键修改：只有形态正常且有运动的精子才算 normal
+    if "cluster" in class_name or class_id == 1:
       cluster_count_raw += 1  # 绿色 -> cluster
-    elif "pinhead" in class_name or "small" in class_name:
+    elif "pinhead" in class_name or "small" in class_name or class_id == 2:
       pinhead_count_raw += 1  # 蓝色 -> pinhead
-    else:
-      # 如果 class_name 不匹配，尝试用 class_id（常见映射：0=normal, 1=cluster, 2=pinhead）
-      if class_id == 0:
-        normal_count_raw += 1
-      elif class_id == 1:
-        cluster_count_raw += 1
-      elif class_id == 2:
-        pinhead_count_raw += 1
+    elif is_normal_morphology:
+      if is_active:
+        normal_count_raw += 1  # 形态正常 + 有运动 = 正常精子
       else:
-        # 默认归类为 normal
-        normal_count_raw += 1
+        dead_sperm_count += 1  # 形态正常但不动 = 死精
+    else:
+      # 形态异常或无法分类
+      if is_active:
+        normal_count_raw += 1  # 有运动就勉强算正常
+      else:
+        pinhead_count_raw += 1  # 形态异常且不动 = 质量差
   
   # 调试输出
   print("\n" + "="*60)
   print("=== DEBUG: 精子类别统计 ===")
   print(f"总轨迹数: {track_count}")
+  print(f"活跃轨迹数: {active_tracks} (速度 >= {MIN_ACTIVE_SPEED} 像素/秒)")
   unique_classes = set(class_names_found)
   print(f"发现的唯一类别: {list(unique_classes)[:10]}")  # 只显示前10个
-  print(f"基于 class_name 统计:")
-  print(f"  Normal (红色): {normal_count_raw}")
-  print(f"  Cluster (绿色): {cluster_count_raw}")
-  print(f"  Pinhead (蓝色): {pinhead_count_raw}")
+  print(f"基于形态 + 运动性统计:")
+  print(f"  ✅ Normal (形态正常且有运动): {normal_count_raw}")
+  print(f"  🟢 Cluster (聚集): {cluster_count_raw}")
+  print(f"  🔵 Pinhead (针头/畸形): {pinhead_count_raw}")
+  print(f"  💀 Dead (形态正常但不动): {dead_sperm_count}")
+  motility_rate = (active_tracks / track_count * 100) if track_count else 0
+  print(f"活力率: {motility_rate:.1f}%")
   print("="*60 + "\n")
   
   normal_ratio = active_tracks / track_count if track_count else 0.0
 
-  # 使用真实统计结果，但确保至少有一些数量
+  # 使用真实统计结果，将死精归入 pinhead (质量差)
+  # 逻辑：形态正常但不动的精子 = 死精 = 质量问题
+  pinhead_count_raw += dead_sperm_count  
+  
   total_sperm = max(track_count, normal_count_raw + cluster_count_raw + pinhead_count_raw, 1)
   
   # 如果统计结果为空，使用回退逻辑

@@ -406,7 +406,7 @@ export default function ReportPage({ params }: { params: { id: string } }) {
             transform: 'perspective(1000px) rotateY(-2deg)',
           }}
         >
-          <h3 className="text-xl mb-4 text-white">🔬 Microscope Detection Results</h3>
+          <h3 className="text-xl mb-4 text-white">🔬 Microscope Detection Results (example frame)</h3>
           <AnnotatedImage
             imageUrl={analysis.annotated_image_url}
             normalCount={analysis.normal_count}
