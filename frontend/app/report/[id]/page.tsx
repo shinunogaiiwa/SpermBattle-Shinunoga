@@ -26,6 +26,7 @@ export default function ReportPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(!initialAnalysis);
   const [error, setError] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showRacingMode, setShowRacingMode] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -137,6 +138,10 @@ export default function ReportPage({ params }: { params: { id: string } }) {
       console.error(err);
       alert('Match failed, please try again');
     }
+  };
+
+  const handleToggleRacingMode = () => {
+    setShowRacingMode(!showRacingMode);
   };
 
   // Generate roasts and badges from analysis data
@@ -429,11 +434,11 @@ export default function ReportPage({ params }: { params: { id: string } }) {
           </motion.div>
           <motion.div whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }}>
             <Button
-              onClick={handleStartBattle}
-              className="h-16 text-lg bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 w-full shadow-lg"
+              onClick={handleToggleRacingMode}
+              className="h-16 text-lg bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 w-full shadow-lg group relative"
+              title="Challenge others based on your fitness data"
             >
-              <Swords className="w-5 h-5 mr-2" />
-              PK Battle
+              🏃 <span className="ml-2">Real-Life Race</span>
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }}>
@@ -447,6 +452,94 @@ export default function ReportPage({ params }: { params: { id: string } }) {
             </Button>
           </motion.div>
         </motion.div>
+
+        {/* Racing Mode Expandable Panel */}
+        {showRacingMode && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: '2rem' }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <motion.div
+              initial={{ y: -20 }}
+              animate={{ y: 0 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
+              className="p-6 rounded-2xl bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border-2 border-cyan-500/50 backdrop-blur-sm relative overflow-hidden"
+            >
+              {/* Animated Glow Effect */}
+              <div className="absolute inset-0 opacity-30 pointer-events-none">
+                <motion.div
+                  className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                />
+              </div>
+
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">Choose racing mode:</h3>
+                </div>
+
+                {/* Racing Options */}
+                <div className="space-y-3 mb-6">
+                  {/* Random Match */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleStartBattle}
+                    className="w-full p-4 rounded-xl bg-gradient-to-r from-purple-600/30 to-blue-600/30 border-2 border-purple-500/50 hover:border-purple-400 transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">🎲</div>
+                      <div className="flex-1">
+                        <div className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
+                          Random Match
+                        </div>
+                        <div className="text-sm text-gray-400">8 players, similar age</div>
+                      </div>
+                      <div className="text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">→</div>
+                    </div>
+                  </motion.button>
+
+                  {/* Invite Friends */}
+                  <motion.button
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => alert('Private rooms coming soon! You\'ll be able to create custom races with friends.')}
+                    className="w-full p-4 rounded-xl bg-gradient-to-r from-cyan-600/30 to-green-600/30 border-2 border-cyan-500/50 hover:border-cyan-400 transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">👥</div>
+                      <div className="flex-1">
+                        <div className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                          Invite Friends
+                        </div>
+                        <div className="text-sm text-gray-400">Create private room</div>
+                      </div>
+                      <div className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">→</div>
+                    </div>
+                  </motion.button>
+                </div>
+
+                {/* Health Boost Info */}
+                <div className="p-4 rounded-xl bg-black/30 border border-green-500/30">
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">💡</div>
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-400 mb-1">Your current boost:</div>
+                      <div className="text-lg font-bold text-green-400">
+                        +33% from health data
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
         {/* Floating Info Button - Bottom Right */}
         <motion.button

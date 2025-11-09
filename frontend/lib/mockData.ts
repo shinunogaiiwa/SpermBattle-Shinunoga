@@ -1,5 +1,5 @@
 // Mock data for demo purposes
-import { Analysis, LeaderboardEntry, Battle } from '@/types';
+import { Analysis, LeaderboardEntry, Battle, UserHealthData } from '@/types';
 
 // Country flags and names
 export const COUNTRIES: Record<string, { flag: string; name: string }> = {
@@ -324,6 +324,205 @@ export const simulateAnalysis = (file: File): Promise<Analysis> => {
       mockAnalyses.push(newAnalysis);
       resolve(newAnalysis);
     }, 2500); // Simulate processing time
+  });
+};
+
+// 🆕 Generate random health data for a user
+function generateMockHealthData(): UserHealthData {
+  const recoveryLevels: Array<'Excellent' | 'Good' | 'Fair' | 'Poor'> = ['Excellent', 'Good', 'Fair', 'Poor'];
+  
+  return {
+    sleep: {
+      average: Number((6 + Math.random() * 3).toFixed(1)), // 6-9 hours
+      change: Number((Math.random() * 1 - 0.5).toFixed(1)), // -0.5 to +0.5
+      deep: Number((1.5 + Math.random() * 1.5).toFixed(1)), // 1.5-3 hours
+      rem: Number((1 + Math.random() * 1.5).toFixed(1)), // 1-2.5 hours
+      consistency: Math.floor(60 + Math.random() * 40), // 60-100%
+    },
+    activity: {
+      steps: Math.floor(5000 + Math.random() * 8000), // 5k-13k steps
+      change: Math.floor(Math.random() * 3000 - 1000), // -1000 to +2000
+      active_days: Math.floor(15 + Math.random() * 15), // 15-30 days
+      calories: Math.floor(200 + Math.random() * 400), // 200-600 kcal
+      streak: Math.floor(Math.random() * 30), // 0-30 days
+    },
+    workouts: {
+      per_week: Math.floor(1 + Math.random() * 5), // 1-6 sessions
+      change: Math.floor(Math.random() * 3 - 1), // -1 to +2
+      cardio: Math.floor(20 + Math.random() * 40), // 20-60 min
+      strength: Math.floor(15 + Math.random() * 35), // 15-50 min
+      flexibility: Math.floor(5 + Math.random() * 20), // 5-25 min
+    },
+    heart: {
+      resting_hr: Math.floor(55 + Math.random() * 25), // 55-80 bpm
+      change: Math.floor(Math.random() * 10 - 5), // -5 to +5
+      hrv: Math.floor(30 + Math.random() * 40), // 30-70 ms
+      vo2_max: Math.floor(35 + Math.random() * 25), // 35-60 ml/kg/min
+      recovery: recoveryLevels[Math.floor(Math.random() * recoveryLevels.length)],
+    },
+  };
+}
+
+// 🆕 Calculate total racing boost from health data
+export function calculateRacingBoost(healthData: UserHealthData): number {
+  let boost = 100; // Base 100%
+  
+  // Sleep bonus (up to +15%)
+  if (healthData.sleep.average >= 7) boost += 15;
+  else if (healthData.sleep.average >= 6) boost += 8;
+  
+  // Activity bonus (up to +10%)
+  if (healthData.activity.steps >= 8000) boost += 10;
+  else if (healthData.activity.steps >= 6000) boost += 5;
+  
+  // Workout bonus (up to +8%)
+  if (healthData.workouts.per_week >= 4) boost += 8;
+  else if (healthData.workouts.per_week >= 2) boost += 4;
+  
+  // Heart health bonus (up to +5%)
+  if (healthData.heart.resting_hr <= 65) boost += 5;
+  else if (healthData.heart.resting_hr <= 75) boost += 2;
+  
+  return Math.round(boost);
+}
+
+// Health apps/devices pool
+const HEALTH_APPS = [
+  { icon: '⌚', name: 'Apple Watch', color: 'cyan' },
+  { icon: '⌚', name: 'Fitbit', color: 'green' },
+  { icon: '⌚', name: 'Garmin', color: 'blue' },
+  { icon: '⌚', name: 'Samsung Watch', color: 'purple' },
+  { icon: '📱', name: 'MyFitnessPal', color: 'blue' },
+  { icon: '🏃', name: 'Strava', color: 'orange' },
+  { icon: '💤', name: 'Sleep Cycle', color: 'indigo' },
+  { icon: '🧘', name: 'Calm', color: 'purple' },
+  { icon: '🏋️', name: 'Strong', color: 'red' },
+];
+
+// Random usernames pool for racing mode
+const RACING_USERNAMES = [
+  'SpeedDemon', 'SwimChamp', 'TurboRacer', 'FitnessKing', 'AlphaSwimmer',
+  'GymBro2000', 'HealthNut', 'IronMan92', 'CardioQueen', 'FitnessFanatic',
+  'SwimMaster', 'RacingLegend', 'SprintKing', 'PowerHouse', 'VelocityVic',
+  'ZoomZoom', 'FastFury', 'BlazingBolt', 'SwiftSwimmer', 'TurboTom',
+  'SlowPoke88', 'LazyRunner', 'CouchPotato', 'SnailPace', 'TurtleSpeed',
+  'ChillVibes', 'RelaxMax', 'EasyRider', 'SlowMo', 'NapMaster',
+];
+
+// Title pools by category
+const TITLE_POOLS = {
+  GOD: [
+    '👑 Fertility Deity',
+    '⚡ Sperm Lightning',
+    '🏆 Champion Swimmer',
+    '💪 Alpha Producer',
+    '🔥 Maximum Velocity',
+  ],
+  MID: [
+    '🤷 Average Swimmer',
+    '📊 Mid-Tier Performer',
+    '🎯 Decent Effort',
+    '💼 Standard Issue',
+    '📈 Room for Growth',
+  ],
+  TRASH: [
+    '😭 Struggling Swimmer',
+    '🐌 Snail Pace Squad',
+    '💀 Bottom Feeder',
+    '🪦 Barely Moving',
+    '🚑 Needs Help',
+  ],
+  OMEGA: [
+    '💀 Extinction Helper',
+    '☠️ Dead in Water',
+    '🏴‍☠️ Ghost Squadron',
+    '⚰️ RIP Performance',
+    '🪦 DNF (Did Not Finish)',
+  ],
+};
+
+// 🆕 Randomize usernames and titles for racing mode (keep current user as "YOU")
+export const randomizeRacingLeaderboard = (
+  entries: LeaderboardEntry[],
+  currentAnalysisId?: number
+): LeaderboardEntry[] => {
+  // Create a shuffled copy of usernames
+  const shuffledUsernames = [...RACING_USERNAMES].sort(() => Math.random() - 0.5);
+  let usernameIndex = 0;
+
+  return entries.map((entry) => {
+    // Keep current user as "YOU"
+    if (currentAnalysisId && entry.analysis_id === currentAnalysisId) {
+      return entry;
+    }
+
+    // Assign random username
+    const randomUsername = shuffledUsernames[usernameIndex % shuffledUsernames.length];
+    usernameIndex++;
+
+    // Assign random title based on score
+    let titleCategory: 'GOD' | 'MID' | 'TRASH' | 'OMEGA';
+    if (entry.score >= 80) titleCategory = 'GOD';
+    else if (entry.score >= 60) titleCategory = 'MID';
+    else if (entry.score >= 30) titleCategory = 'TRASH';
+    else titleCategory = 'OMEGA';
+
+    const titlePool = TITLE_POOLS[titleCategory];
+    const randomTitle = titlePool[Math.floor(Math.random() * titlePool.length)];
+
+    return {
+      ...entry,
+      username: randomUsername,
+      title: randomTitle,
+      title_category: titleCategory,
+    };
+  });
+};
+
+// 🆕 Add device and rank change to leaderboard entries
+export const enhanceLeaderboardWithHealthData = (
+  entries: LeaderboardEntry[],
+  isRacingMode: boolean = false
+): Array<LeaderboardEntry & { healthData?: UserHealthData }> => {
+  const devices = ['Apple Watch', 'Fitbit', 'Garmin', null];
+  
+  return entries.map((entry, index) => {
+    // Higher chance for racing mode: 80% for racing, 30% for others
+    const deviceChance = isRacingMode ? 0.8 : 0.3;
+    const hasDevice = Math.random() < deviceChance;
+    const device = hasDevice ? devices[Math.floor(Math.random() * 3)] as string : undefined;
+    
+    // Higher chance for racing mode: 90% for racing, 60% for others
+    const appsChance = isRacingMode ? 0.9 : 0.6;
+    const hasConnectedApps = Math.random() < appsChance;
+    const appCount = hasConnectedApps ? Math.floor(Math.random() * 3) + 1 : 0;
+    const connected_apps = hasConnectedApps 
+      ? Array.from({ length: appCount }, () => HEALTH_APPS[Math.floor(Math.random() * HEALTH_APPS.length)])
+      : undefined;
+    
+    // Generate rank change (-10 to +10)
+    const rank_change = Math.floor(Math.random() * 21 - 10);
+    
+    // Generate health score (60-100 for top players, 40-80 for others)
+    const health_score = index < 10 
+      ? Math.floor(80 + Math.random() * 20)
+      : Math.floor(50 + Math.random() * 40);
+    
+    // Score change from last month
+    const score_change = Math.floor(Math.random() * 20 - 5);
+    
+    // Generate full health data (will be shown in modal)
+    const healthData = generateMockHealthData();
+    
+    return {
+      ...entry,
+      device,
+      rank_change: rank_change !== 0 ? rank_change : undefined,
+      health_score,
+      score_change,
+      connected_apps,
+      healthData,
+    };
   });
 };
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Swords, ArrowLeft, MessageCircle } from 'lucide-react';
+import { Swords, ArrowLeft, MessageCircle, Info, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FloatingSperm } from '@/components/FloatingSperm';
 import { useAppStore } from '@/lib/store';
 import { api, type LeaderboardCategory } from '@/lib/api';
-import type { LeaderboardEntry } from '@/types';
+import type { LeaderboardEntry, UserHealthData } from '@/types';
+import { enhanceLeaderboardWithHealthData, calculateRacingBoost, randomizeRacingLeaderboard } from '@/lib/mockData';
 
 const roastComments = [
   { user: 'Player420', message: 'How tf you get 8 points??' },
@@ -22,9 +23,10 @@ const roastComments = [
 
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState<LeaderboardCategory>('global');
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboard, setLeaderboard] = useState<Array<LeaderboardEntry & { healthData?: UserHealthData }>>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<(LeaderboardEntry & { healthData?: UserHealthData }) | null>(null);
   const router = useRouter();
   const currentAnalysis = useAppStore(state => state.currentAnalysis);
 
@@ -37,7 +39,15 @@ export default function LeaderboardPage() {
       .getLeaderboard(activeTab)
       .then(data => {
         if (cancelled) return;
-        setLeaderboard(data);
+        // 🆕 Randomize usernames/titles for racing mode
+        const isRacingMode = activeTab === 'gaming';
+        let processedData = data;
+        if (isRacingMode) {
+          processedData = randomizeRacingLeaderboard(data, currentAnalysis?.id);
+        }
+        // 🆕 Enhance with health data (pass isRacingMode for higher device/app chance)
+        const enhanced = enhanceLeaderboardWithHealthData(processedData, isRacingMode);
+        setLeaderboard(enhanced);
       })
       .catch(() => {
         if (cancelled) return;
@@ -51,7 +61,7 @@ export default function LeaderboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [activeTab]);
+  }, [activeTab, currentAnalysis]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -73,7 +83,7 @@ export default function LeaderboardPage() {
       case 'shame':
         return '😂 Hall of Shame (bottom feeders for entertainment)';
       case 'gaming':
-        return '🎮 Gaming Leaderboard (by win rate)';
+        return ''; // Hidden subtitle for racing mode
       default:
         return '';
     }
@@ -135,8 +145,8 @@ export default function LeaderboardPage() {
             </TabsTrigger>
             <TabsTrigger value="gaming" className="py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-cyan-600">
               <div>
-                <div className="text-2xl">🎮</div>
-                <div className="text-xs mt-1">Gaming</div>
+                <div className="text-2xl">🏃</div>
+                <div className="text-xs mt-1">Real Life Racing</div>
               </div>
             </TabsTrigger>
           </TabsList>
@@ -154,7 +164,7 @@ export default function LeaderboardPage() {
             )}
             {!isLoading && !error && (
               <div className="space-y-3">
-                {leaderboard.map((entry, index) => {
+                {leaderboard.slice(0, activeTab === 'gaming' ? 8 : leaderboard.length).map((entry, index) => {
                   const isCurrentUser = currentAnalysis && entry.analysis_id === currentAnalysis.id;
                   const isShameBoard = activeTab === 'shame';
                   const isGamingBoard = activeTab === 'gaming';
@@ -163,7 +173,7 @@ export default function LeaderboardPage() {
                     <motion.div
                       key={entry.analysis_id}
                       className={`
-                        bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 shadow-sm transition-all hover:shadow-lg border
+                        bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 shadow-sm transition-all hover:shadow-lg border cursor-pointer
                         ${isCurrentUser ? 'ring-2 ring-purple-500 bg-purple-950/30 border-purple-500' : 'border-gray-800'}
                         ${index < 3 && !isShameBoard ? 'border-2 border-yellow-500' : ''}
                         ${isShameBoard && index < 3 ? 'border-2 border-red-500' : ''}
@@ -172,6 +182,7 @@ export default function LeaderboardPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                       whileHover={{ scale: 1.02, y: -2 }}
+                      onClick={() => setSelectedUser(entry)}
                     >
                       <div className="flex items-center gap-4">
                         <div
@@ -194,11 +205,18 @@ export default function LeaderboardPage() {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span className="text-lg">{entry.country_flag}</span>
                             <span className="text-sm text-gray-400 truncate">
                               {isCurrentUser ? 'You' : entry.username}
                             </span>
+                            
+                            {/* 🆕 Rank Change */}
+                            {entry.rank_change && entry.rank_change !== 0 && (
+                              <span className={`text-xs font-semibold ${entry.rank_change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {entry.rank_change > 0 ? '⬆️' : '⬇️'} {Math.abs(entry.rank_change)}
+                              </span>
+                            )}
                           </div>
                           <div
                             className={`truncate ${
@@ -209,39 +227,41 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
 
-                        <div className="flex-shrink-0 text-right">
-                          <div
-                            className={`text-2xl tabular-nums ${
-                              isGamingBoard ? 'text-green-500' : isShameBoard ? 'text-red-500' : 'text-purple-500'
-                            }`}
-                          >
-                            {isGamingBoard ? `${entry.score}%` : entry.score}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {isGamingBoard ? 'win rate' : 'pts'}
-                          </div>
-                        </div>
+                        {!isGamingBoard && (
+                          <>
+                            <div className="flex-shrink-0 text-right">
+                              <div
+                                className={`text-2xl tabular-nums ${
+                                  isShameBoard ? 'text-red-500' : 'text-purple-500'
+                                }`}
+                              >
+                                {entry.score}
+                              </div>
+                              <div className="text-xs text-gray-400">pts</div>
+                            </div>
 
-                        <div className="flex-shrink-0 flex gap-2">
-                          {!isCurrentUser && !isShameBoard && (
-                            <Button
-                              size="sm"
-                              onClick={handleChallenge}
-                              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                            >
-                              <Swords className="w-4 h-4" />
-                            </Button>
-                          )}
-                          {isShameBoard && index < 3 && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="border-red-500 text-red-500 hover:bg-red-950/30"
-                            >
-                              Spectate
-                            </Button>
-                          )}
-                        </div>
+                            <div className="flex-shrink-0 flex gap-2">
+                              {!isCurrentUser && !isShameBoard && (
+                                <Button
+                                  size="sm"
+                                  onClick={handleChallenge}
+                                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                                >
+                                  <Swords className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {isShameBoard && index < 3 && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="border-red-500 text-red-500 hover:bg-red-950/30"
+                                >
+                                  Spectate
+                                </Button>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {isShameBoard && index < 3 && (
@@ -265,17 +285,45 @@ export default function LeaderboardPage() {
                         </motion.div>
                       )}
 
-                      {isGamingBoard && entry.wins !== undefined && (
+                      {isGamingBoard && (entry.device || (entry.connected_apps && entry.connected_apps.length > 0)) && (
                         <motion.div
-                          className="mt-3 pt-3 border-t border-gray-800 flex gap-4 text-xs"
+                          className="mt-3 pt-3 border-t border-gray-800"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.3 }}
                         >
-                          <div className="text-green-400">{entry.wins ?? 0}W</div>
-                          <div className="text-red-400">{entry.losses ?? 0}L</div>
-                          <div className="text-gray-500">
-                            {(entry.wins ?? 0) + (entry.losses ?? 0)} games
+                          {/* Connected Apps/Devices */}
+                          <div className="flex items-center gap-1 flex-wrap">
+                            {/* Device Badge */}
+                            {entry.device && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1">
+                                <span>⌚</span>
+                                <span>{entry.device}</span>
+                              </span>
+                            )}
+                            
+                            {/* Connected Apps */}
+                            {entry.connected_apps?.map((app, appIdx) => {
+                              // Map colors to Tailwind classes
+                              const colorClasses = {
+                                cyan: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+                                green: 'bg-green-500/20 text-green-400 border-green-500/30',
+                                blue: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+                                purple: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                                orange: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+                                indigo: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+                                red: 'bg-red-500/20 text-red-400 border-red-500/30',
+                              };
+                              return (
+                                <span
+                                  key={`${app.name}-${appIdx}`}
+                                  className={`text-xs px-2 py-0.5 rounded-full border flex items-center gap-1 ${colorClasses[app.color as keyof typeof colorClasses] || colorClasses.blue}`}
+                                >
+                                  <span>{app.icon}</span>
+                                  <span>{app.name}</span>
+                                </span>
+                              );
+                            })}
                           </div>
                         </motion.div>
                       )}
@@ -304,6 +352,215 @@ export default function LeaderboardPage() {
               <Swords className="w-6 h-6 mr-2" />
               Random Match
             </Button>
+          </motion.div>
+        )}
+
+        {/* User Health Detail Modal */}
+        {selectedUser && selectedUser.healthData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setSelectedUser(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-gray-900 rounded-2xl p-6 max-w-2xl w-full border-2 border-cyan-500/50 relative max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="text-4xl">{selectedUser.country_flag}</div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">{selectedUser.username}</h2>
+                      <div className="text-sm text-gray-400">{selectedUser.title}</div>
+                    </div>
+                  </div>
+                  
+                  {selectedUser.device && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm border border-cyan-500/30">
+                        ⌚ {selectedUser.device}
+                      </span>
+                      <span className="text-sm text-gray-400">Connected 7 days ago</span>
+                    </div>
+                  )}
+                </div>
+                
+                <button
+                  onClick={() => setSelectedUser(null)}
+                  className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-800 rounded-lg"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Health Score Overview */}
+              <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-green-900/30 to-cyan-900/30 border border-green-500/30">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <div className="text-sm text-gray-400">Overall Health Score</div>
+                    <div className="text-4xl font-bold text-green-400">
+                      {selectedUser.health_score}/100
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-gray-400">vs Last Month</div>
+                    <div className={`text-2xl font-bold flex items-center gap-1 ${
+                      (selectedUser.score_change || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      <span>{(selectedUser.score_change || 0) >= 0 ? '⬆️' : '⬇️'}</span>
+                      <span>{Math.abs(selectedUser.score_change || 0)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-green-500 to-cyan-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${selectedUser.health_score}%` }}
+                    transition={{ duration: 1, delay: 0.2 }}
+                  />
+                </div>
+              </div>
+
+              {/* Health Improvements This Month - Simplified Card View */}
+              <div>
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                  <span>📊</span>
+                  <span>Health Improvements This Month</span>
+                </h3>
+
+                {/* 2x2 Grid of Simple Cards */}
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  {/* Sleep Card */}
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="p-4 rounded-xl bg-gradient-to-br from-blue-900/30 to-indigo-900/30 border border-blue-500/30 hover:border-blue-500/50 transition-colors"
+                  >
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">😴</div>
+                      <div className="text-xs text-gray-400 mb-1">Sleep</div>
+                      <div className={`text-2xl font-bold ${
+                        selectedUser.healthData.sleep.change >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {selectedUser.healthData.sleep.change >= 0 ? '↗️' : '↘️'} 
+                        {selectedUser.healthData.sleep.change >= 0 ? '+' : ''}{(selectedUser.healthData.sleep.change * 60).toFixed(0)}min
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {selectedUser.healthData.sleep.average}h avg
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Steps Card */}
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.15 }}
+                    className="p-4 rounded-xl bg-gradient-to-br from-green-900/30 to-emerald-900/30 border border-green-500/30 hover:border-green-500/50 transition-colors"
+                  >
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">🏃</div>
+                      <div className="text-xs text-gray-400 mb-1">Steps</div>
+                      <div className={`text-2xl font-bold ${
+                        selectedUser.healthData.activity.change >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {selectedUser.healthData.activity.change >= 0 ? '↗️' : '↘️'} 
+                        {selectedUser.healthData.activity.change >= 0 ? '+' : ''}{(selectedUser.healthData.activity.change / 1000).toFixed(1)}k
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {(selectedUser.healthData.activity.steps / 1000).toFixed(1)}k avg
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Workouts Card */}
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="p-4 rounded-xl bg-gradient-to-br from-orange-900/30 to-red-900/30 border border-orange-500/30 hover:border-orange-500/50 transition-colors"
+                  >
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">🔥</div>
+                      <div className="text-xs text-gray-400 mb-1">Workouts</div>
+                      <div className={`text-2xl font-bold ${
+                        selectedUser.healthData.workouts.change >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {selectedUser.healthData.workouts.change >= 0 ? '↗️' : '↘️'} 
+                        {selectedUser.healthData.workouts.change >= 0 ? '+' : ''}{selectedUser.healthData.workouts.change}x
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {selectedUser.healthData.workouts.per_week}x/week
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Heart Card */}
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.25 }}
+                    className="p-4 rounded-xl bg-gradient-to-br from-red-900/30 to-pink-900/30 border border-red-500/30 hover:border-red-500/50 transition-colors"
+                  >
+                    <div className="text-center">
+                      <div className="text-3xl mb-2">❤️</div>
+                      <div className="text-xs text-gray-400 mb-1">Heart</div>
+                      <div className={`text-2xl font-bold ${
+                        selectedUser.healthData.heart.change <= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {selectedUser.healthData.heart.change <= 0 ? '↘️' : '↗️'} 
+                        {Math.abs(selectedUser.healthData.heart.change)}bpm
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {selectedUser.healthData.heart.resting_hr} avg
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Racing Boost Summary */}
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="p-4 rounded-xl bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">🎮</div>
+                      <div>
+                        <div className="text-sm text-gray-400">Racing Power</div>
+                        <div className="text-xs text-gray-500">Based on health data</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-purple-400">
+                        +{calculateRacingBoost(selectedUser.healthData) - 100}%
+                      </div>
+                      <div className="text-xs text-gray-400">speed boost</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Privacy Notice */}
+              <div className="mt-4 p-3 rounded-lg bg-gray-800/50 border border-gray-700">
+                <div className="flex items-start gap-2 text-xs text-gray-400">
+                  <span>🔒</span>
+                  <div>
+                    <span className="font-semibold text-gray-300">Privacy:</span> This user has consented to share their health data publicly for competitive purposes. All data is anonymized and aggregated.
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </div>
